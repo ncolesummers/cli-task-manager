@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 	"path/filepath"
 
 	homedir "github.com/mitchellh/go-homedir"
@@ -10,15 +11,17 @@ import (
 )
 
 func main() {
-	home, err := homedir.Dir()
-	if err != nil {
-		log.Println(err)
-	}
+	home, _ := homedir.Dir()
 
 	dbPath := filepath.Join(home, "tasks.db")
-	err = db.Init(dbPath)
+	must(db.Init(dbPath))
+
+	must(cmd.RootCmd.Execute())
+}
+
+func must(err error) {
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err.Error())
+		os.Exit(1)
 	}
-	cmd.RootCmd.Execute()
 }
